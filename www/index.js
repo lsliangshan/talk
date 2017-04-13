@@ -6,6 +6,8 @@
  * @version    15/1/15
  */
 var path = require('path');
+require('shelljs/global');
+exec('cd www/Static && node build/dev-server.js', {async:true});
 var thinknode = require('thinknode');
 //root path
 var rootPath = path.dirname(__dirname);

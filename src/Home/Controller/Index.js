@@ -23,6 +23,7 @@ export default class extends THINK.Controller {
     }
     //控制器默认方法
     indexAction () {
-        return this.display();
+        // return this.display();
+      return this.redirect('http://' + this.http.hostname + ':4000')
     }
 }
