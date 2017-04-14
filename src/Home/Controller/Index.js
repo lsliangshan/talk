@@ -28,8 +28,22 @@ export default class extends THINK.Controller {
 
   //控制器默认方法
   async indexAction () {
-    let userInfo = await this.UserModel.where({phonenum: '18311032722', password: THINK.md5('123')}).find();
-    console.log('UserInfo: ', userInfo)
-    return this.display();
+    let userInfo = await this.UserModel.where({phonenum: '18311032722', password: THINK.md5('1223')}).find();
+    userInfo.hasOwnProperty('password') && (delete userInfo.password)
+    console.log('>>>>>>', userInfo)
+    return this.deny(403);
+  }
+
+  // 登录
+  async loginAction () {
+    if (this.isPost()) {
+      let phonenum = this.post('phonenum')
+      let password = this.post('password')
+      let userInfo = await this.UserModel.where({phonenum, phonenum, password: THINK.md5(password)}).find();
+      userInfo.hasOwnProperty('password') && (delete userInfo.password)
+      return this.success(userInfo)
+    } else {
+      return this.error('请求姿势不正确~');
+    }
   }
 }
