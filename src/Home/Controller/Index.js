@@ -41,7 +41,11 @@ export default class extends THINK.Controller {
       let password = this.post('password')
       let userInfo = await this.UserModel.where({phonenum, phonenum, password: THINK.md5(password)}).find();
       userInfo.hasOwnProperty('password') && (delete userInfo.password)
-      return this.success(userInfo)
+      if (THINK.isEmpty(userInfo)) {
+        return this.error('手机号或密码输入有误')
+      } else {
+        return this.success('登录成功', userInfo)
+      }
     } else {
       return this.error('请求姿势不正确~');
     }
