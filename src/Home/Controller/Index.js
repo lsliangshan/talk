@@ -2,7 +2,7 @@
  * Controller
  * @return
  */
-
+let jwt = require('jsonwebtoken');
 export default class extends THINK.Controller {
   //构造方法
   init (http) {
@@ -44,6 +44,10 @@ export default class extends THINK.Controller {
       if (THINK.isEmpty(userInfo)) {
         return this.error('手机号或密码输入有误')
       } else {
+        this.header('app-token', jwt.sign({
+          phonenum: phonenum,
+          nickname: userInfo.nickname
+        }, 'shhhhh'))
         return this.success('登录成功', userInfo)
       }
     } else {

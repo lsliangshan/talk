@@ -11,7 +11,15 @@
   },
   "babel": {
     "presets": [
-      ["env", {"targets": {"node": true}, "loose": true}]
+      [
+        "env",
+        {
+          "targets": {
+            "node": true
+          },
+          "loose": true
+        }
+      ]
     ],
     "plugins": [
       "transform-runtime"
@@ -31,6 +39,7 @@
     "debug": "^2.2.0",
     "eslint": "^3.15.0",
     "istanbul": "^0.4.5",
+    "jsonwebtoken": "^7.3.0",
     "mocha": "^3.2.0",
     "muk": "^0.5.3"
   }
