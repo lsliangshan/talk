@@ -28,10 +28,18 @@ export default class extends THINK.Controller {
 
   //控制器默认方法
   async indexAction () {
-    let userInfo = await this.UserModel.where({phonenum: '18311032722', password: THINK.md5('1223')}).find();
-    userInfo.hasOwnProperty('password') && (delete userInfo.password)
-    console.log('>>>>>>', userInfo)
-    return this.deny(403);
+    // let userInfo = await this.UserModel.where({phonenum: '18311032722', password: THINK.md5('1223')}).find();
+    // userInfo.hasOwnProperty('password') && (delete userInfo.password)
+    // console.log('>>>>>>', userInfo)
+    // return this.deny(403);
+
+    return this.display()
+  }
+
+  getipAction () {
+    return this.json({
+      ip: this.http.req.connection.remoteAddress.split(':')[3]
+    })
   }
 
   // 登录
