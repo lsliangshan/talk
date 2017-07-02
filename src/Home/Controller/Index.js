@@ -10,7 +10,8 @@ const cheerio = require('cheerio');
 const request = require('request');
 const rp = require('request-promise')
 let i = 0;
-let url = 'http://mp3.sogou.com';
+// let url = 'http://mp3.sogou.com';
+let url = 'http://mp3.sogou.com/tiny/diss?diss_id=1138337852&query=%C2%F4%B3%A1%D2%F4%C0%D6%A3%BA%C3%BF%B4%CE%BD%F8%B5%EA%B6%BC%D3%D0%D6%D6%D2%AA%C9%CFT%CC%A8%B5%C4%B8%D0%BE%F5%A3%A1&diss_name=%C2%F4%B3%A1%D2%F4%C0%D6%A3%BA%C3%BF%B4%CE%BD%F8%B5%EA%B6%BC%D3%D0%D6%D6%D2%AA%C9%CFT%CC%A8%B5%C4%B8%D0%BE%F5%A3%A1';
 // let url = 'http://mp3.sogou.com/list/song?type=%C3%C0%B9%FA%B9%AB%B8%E6%B0%F1&ie=gbk';
 // (function(window){
 //   window.htmlentities = {
@@ -103,22 +104,27 @@ export default class extends THINK.Controller {
       }
       let out = [];
       await rp(options).then(function (autoParsedBody) {
-        html = autoParsedBody.substring(autoParsedBody.indexOf(_start), autoParsedBody.indexOf(_end));
+        html = autoParsedBody;
+        // html = autoParsedBody.substring(autoParsedBody.indexOf(_start), autoParsedBody.indexOf(_end));
         // html = html.match(new RegExp('http.*?\.(m4a)|(mp3)', 'g'))
         html = html.match(new RegExp('http.*?\.m4a\?.*?#,#.*?#,#.*?#,#.*?#,#', 'g'))
         let i = 0;
         let temp;
         let tempObj = {};
+        let tempUrl;
         for (i; i < html.length; i++) {
           tempObj = {};
           temp = html[i].replace(/#,#$/, '').split('#,#');
-          tempObj = {
-            name: (i + 1) + '. ' + temp[1],
-            author: temp[3],
-            url: decodeURIComponent(temp[0].replace(/\?.*$/, '')),
-            poster: 'http://talkapi.dei2.com/Static/img/default_cover.jpeg'
+          tempUrl = decodeURIComponent(temp[0].replace(/\?.*$/, ''));
+          if (JSON.stringify(out).indexOf(tempUrl) < 0) {
+            tempObj = {
+              name: (i + 1) + '. ' + temp[1],
+              author: temp[3],
+              url: tempUrl,
+              poster: 'http://talkapi.dei2.com/Static/img/default_cover.jpeg'
+            }
+            out.push(tempObj)
           }
-          out.push(tempObj)
         }
       }).catch(function (err) {
         console.log('ERROR: ', err)
