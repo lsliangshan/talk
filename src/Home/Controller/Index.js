@@ -77,9 +77,9 @@ export default class extends THINK.Controller {
 
   async fetchPageAction () {
     const that = this;
-    if (!this.isPost()) {
+    let _callback = this.get('callback');
+    if (!!_callback) {
       let html = '';
-      let _callback = this.get('callback');
       function autoParse(body, response, resolveWithFullResponse) {
         // FIXME: The content type string could contain additional values like the charset.
         // Consider using the `content-type` library for a robust comparison.
@@ -124,12 +124,14 @@ export default class extends THINK.Controller {
         console.log('ERROR: ', err)
       });
 
-      if (_callback) {
-        this.header('Content-Type', 'text/javascript')
-        return this.json(_callback + "(" + JSON.stringify(out) + ")");
-      } else {
-        return this.jsonp(out)
-      }
+      // if (_callback) {
+      //   this.header('Content-Type', 'text/javascript')
+      //   return this.json(_callback + "(" + JSON.stringify(out) + ")");
+      // } else {
+      //   return this.jsonp(out)
+      // }
+      this.header('Content-Type', 'text/javascript')
+      return this.json(_callback + "(" + JSON.stringify(out) + ")");
     } else {
       return this.fail('请求姿势不正确')
     }
