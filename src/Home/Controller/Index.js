@@ -77,54 +77,57 @@ export default class extends THINK.Controller {
 
   async fetchPageAction () {
     const that = this;
-    let html = '';
+    if (this.isPost()) {
+      let html = '';
 
-    function autoParse(body, response, resolveWithFullResponse) {
-      // FIXME: The content type string could contain additional values like the charset.
-      // Consider using the `content-type` library for a robust comparison.
-      console.log('>>>>>', response.headers['content-type'])
-      if (response.headers['content-type'] === 'application/json') {
-        return JSON.parse(body);
-      } else if (response.headers['content-type'] === 'text/html') {
-        return cheerio.load(body);
-      } else {
-        return body;
-      }
-    }
-
-    let _start = '<div class="bang_box bang_03">';
-    let _end = '<div class="bang_box bang_04">';
-    // let _start = '<div id="list_div" class="r_con_800">';
-    // let _end = '<div id="footer">';
-
-    let options = {
-      uri: url,
-      transform: autoParse
-    }
-    let out = [];
-    await rp(options).then(function (autoParsedBody) {
-      html = autoParsedBody.substring(autoParsedBody.indexOf(_start), autoParsedBody.indexOf(_end));
-      // html = html.match(new RegExp('http.*?\.(m4a)|(mp3)', 'g'))
-      html = html.match(new RegExp('http.*?\.m4a\?.*?#,#.*?#,#.*?#,#.*?#,#', 'g'))
-      let i = 0;
-      let temp;
-      let tempObj = {};
-      for (i; i < html.length; i++) {
-        tempObj = {};
-        temp = html[i].replace(/#,#$/, '').split('#,#');
-        tempObj = {
-          name: (i + 1) + '. ' + temp[1],
-          author: temp[3],
-          url: decodeURIComponent(temp[0].replace(/\?.*$/, '')),
-          poster: 'http://talkapi.dei2.com/Static/img/default_cover.jpeg'
+      function autoParse(body, response, resolveWithFullResponse) {
+        // FIXME: The content type string could contain additional values like the charset.
+        // Consider using the `content-type` library for a robust comparison.
+        if (response.headers['content-type'] === 'application/json') {
+          return JSON.parse(body);
+        } else if (response.headers['content-type'] === 'text/html') {
+          return cheerio.load(body);
+        } else {
+          return body;
         }
-        out.push(tempObj)
       }
-    }).catch(function (err) {
-      console.log('ERROR: ', err)
-    })
 
-    return this.json(out)
+      let _start = decodeURIComponent(this.post('start')) || '<div class="bang_box bang_03">';
+      let _end = decodeURIComponent(this.post('end')) || '<div class="bang_box bang_04">';
+      // let _start = '<div id="list_div" class="r_con_800">';
+      // let _end = '<div id="footer">';
+
+      let options = {
+        uri: url,
+        transform: autoParse
+      }
+      let out = [];
+      await rp(options).then(function (autoParsedBody) {
+        html = autoParsedBody.substring(autoParsedBody.indexOf(_start), autoParsedBody.indexOf(_end));
+        // html = html.match(new RegExp('http.*?\.(m4a)|(mp3)', 'g'))
+        html = html.match(new RegExp('http.*?\.m4a\?.*?#,#.*?#,#.*?#,#.*?#,#', 'g'))
+        let i = 0;
+        let temp;
+        let tempObj = {};
+        for (i; i < html.length; i++) {
+          tempObj = {};
+          temp = html[i].replace(/#,#$/, '').split('#,#');
+          tempObj = {
+            name: (i + 1) + '. ' + temp[1],
+            author: temp[3],
+            url: decodeURIComponent(temp[0].replace(/\?.*$/, '')),
+            poster: 'http://talkapi.dei2.com/Static/img/default_cover.jpeg'
+          }
+          out.push(tempObj)
+        }
+      }).catch(function (err) {
+        console.log('ERROR: ', err)
+      });
+
+      return this.json(out)
+    } else {
+      return this.fail('请求姿势不正确')
+    }
   }
 
   // 登录
