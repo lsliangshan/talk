@@ -77,7 +77,7 @@ export default class extends THINK.Controller {
 
   async fetchPageAction () {
     const that = this;
-    if (this.isPost()) {
+    if (!this.isPost()) {
       let html = '';
 
       function autoParse(body, response, resolveWithFullResponse) {
@@ -124,7 +124,7 @@ export default class extends THINK.Controller {
         console.log('ERROR: ', err)
       });
 
-      return this.json(out)
+      return this.jsonp(out)
     } else {
       return this.fail('请求姿势不正确')
     }
