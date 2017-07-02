@@ -11,7 +11,7 @@ const request = require('request');
 const rp = require('request-promise')
 let i = 0;
 let url = 'http://mp3.sogou.com';
-
+// let url = 'http://mp3.sogou.com/list/song?type=%C3%C0%B9%FA%B9%AB%B8%E6%B0%F1&ie=gbk';
 // (function(window){
 //   window.htmlentities = {
 //     /**
@@ -92,20 +92,39 @@ export default class extends THINK.Controller {
       }
     }
 
-    let _sel = '.bang_02';
+    let _start = '<div class="bang_box bang_03">';
+    let _end = '<div class="bang_box bang_04">';
+    // let _start = '<div id="list_div" class="r_con_800">';
+    // let _end = '<div id="footer">';
+
     let options = {
       uri: url,
       transform: autoParse
     }
-
+    let out = [];
     await rp(options).then(function (autoParsedBody) {
-      html = autoParsedBody;
-      html = html.match(new RegExp('http.*?\.m4a', 'g'))
+      html = autoParsedBody.substring(autoParsedBody.indexOf(_start), autoParsedBody.indexOf(_end));
+      // html = html.match(new RegExp('http.*?\.(m4a)|(mp3)', 'g'))
+      html = html.match(new RegExp('http.*?\.m4a\?.*?#,#.*?#,#.*?#,#.*?#,#', 'g'))
+      let i = 0;
+      let temp;
+      let tempObj = {};
+      for (i; i < html.length; i++) {
+        tempObj = {};
+        temp = html[i].replace(/#,#$/, '').split('#,#');
+        tempObj = {
+          name: (i + 1) + '. ' + temp[1],
+          author: temp[3],
+          url: decodeURIComponent(temp[0].replace(/\?.*$/, '')),
+          poster: 'http://talkapi.dei2.com/Static/img/default_cover.jpeg'
+        }
+        out.push(tempObj)
+      }
     }).catch(function (err) {
       console.log('ERROR: ', err)
     })
 
-    return this.json(html)
+    return this.json(out)
   }
 
   // 登录
