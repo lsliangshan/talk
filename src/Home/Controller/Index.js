@@ -175,8 +175,12 @@ export default class extends THINK.Controller {
         }
       }
       await rp(options).then(function ($) {
+        let tempStr = '';
         for (let i = 0; i < $('.smallcontent').length; i++) {
-          out.push(decodeHtml($('.smallcontent').eq(i).html().trim()))
+          tempStr = decodeHtml($('.smallcontent').eq(i).html().trim());
+          if (tempStr.indexOf('<br>') > 0 || tempStr.indexOf('<br/>') > 0) {
+            out.push(tempStr.replace(/^\d+、/, '').split('<br>'))
+          }
         }
         html = decodeHtml($('.smallcontent').html())
       }).catch(function (err) {
