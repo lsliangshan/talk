@@ -42,6 +42,12 @@ let url = 'http://mp3.sogou.com/tiny/diss?diss_id=1138337852&query=%C2%F4%B3%A1%
 //   };
 // })(window);
 
+function decodeHtml (str) {
+  return str.replace(/&#(x)?([^&]{1,5});?/g,function($,$1,$2) {
+    return String.fromCharCode(parseInt($2 , $1 ? 16:10));
+  })
+}
+
 export default class extends THINK.Controller {
   //构造方法
   init (http) {
@@ -140,6 +146,45 @@ export default class extends THINK.Controller {
       return this.json(_callback + "(" + JSON.stringify(out) + ")");
     } else {
       return this.fail('请求姿势不正确')
+    }
+  }
+
+  async getJokesAction () {
+    let _callback = this.get('callback');
+    if (!_callback) {
+      return this.fail('请求姿势不正确');
+    } else {
+      let out = [];
+      let _url = 'http://xiaominggunchuqu.com/';
+      let html = '';
+      function autoParse(body, response, resolveWithFullResponse) {
+        // FIXME: The content type string could contain additional values like the charset.
+        // Consider using the `content-type` library for a robust comparison.
+        if (response.headers['content-type'] === 'application/json') {
+          return JSON.parse(body);
+        } else if (response.headers['content-type'] === 'text/html') {
+          return cheerio.load(body);
+        } else {
+          return body;
+        }
+      }
+      let options = {
+        uri: _url,
+        transform: function (body) {
+          return cheerio.load(body)
+        }
+      }
+      await rp(options).then(function ($) {
+        for (let i = 0; i < $('.smallcontent').length; i++) {
+          out.push(decodeHtml($('.smallcontent').eq(i).html().trim()))
+        }
+        html = decodeHtml($('.smallcontent').html())
+      }).catch(function (err) {
+        console.log('ERROR: ', err)
+      });
+      return this.json(out)
+      // this.header('Content-Type', 'text/javascript')
+      // return this.json(_callback + '(' + JSON.stringify(out) + ')');
     }
   }
 
