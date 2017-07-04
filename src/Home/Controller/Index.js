@@ -186,9 +186,9 @@ export default class extends THINK.Controller {
       }).catch(function (err) {
         console.log('ERROR: ', err)
       });
-      return this.json(out)
-      // this.header('Content-Type', 'text/javascript')
-      // return this.json(_callback + '(' + JSON.stringify(out) + ')');
+      // return this.json(out)
+      this.header('Content-Type', 'text/javascript')
+      return this.json(_callback + '(' + JSON.stringify(out) + ')');
     }
   }
 
