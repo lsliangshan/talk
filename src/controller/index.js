@@ -2,58 +2,26 @@
  * Controller
  * @return
  */
-let jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const cheerio = require('cheerio');
 const request = require('request');
-const rp = require('request-promise')
-let i = 0;
-// let url = 'http://mp3.sogou.com';
-let url = 'http://mp3.sogou.com/tiny/diss?diss_id=1138337852&query=%C2%F4%B3%A1%D2%F4%C0%D6%A3%BA%C3%BF%B4%CE%BD%F8%B5%EA%B6%BC%D3%D0%D6%D6%D2%AA%C9%CFT%CC%A8%B5%C4%B8%D0%BE%F5%A3%A1&diss_name=%C2%F4%B3%A1%D2%F4%C0%D6%A3%BA%C3%BF%B4%CE%BD%F8%B5%EA%B6%BC%D3%D0%D6%D6%D2%AA%C9%CFT%CC%A8%B5%C4%B8%D0%BE%F5%A3%A1';
-// let url = 'http://mp3.sogou.com/list/song?type=%C3%C0%B9%FA%B9%AB%B8%E6%B0%F1&ie=gbk';
-// (function(window){
-//   window.htmlentities = {
-//     /**
-//      * Converts a string to its html characters completely.
-//      *
-//      * @param {String} str String with unescaped HTML characters
-//      **/
-//     encode : function(str) {
-//       var buf = [];
-//
-//       for (var i=str.length-1;i>=0;i--) {
-//         buf.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
-//       }
-//
-//       return buf.join('');
-//     },
-//     /**
-//      * Converts an html characterSet into its original character.
-//      *
-//      * @param {String} str htmlSet entities
-//      **/
-//     decode : function(str) {
-//       return str.replace(/&#(\d+);/g, function(match, dec) {
-//         return String.fromCharCode(dec);
-//       });
-//     }
-//   };
-// })(window);
+const rp = require('request-promise');
 
-function decodeHtml (str) {
-  return str.replace(/&#(x)?([^&]{1,5});?/g,function($,$1,$2) {
-    return String.fromCharCode(parseInt($2 , $1 ? 16:10));
+let url = 'http://mp3.sogou.com/tiny/diss?diss_id=1138337852&query=%C2%F4%B3%A1%D2%F4%C0%D6%A3%BA%C3%BF%B4%CE%BD%F8%B5%EA%B6%BC%D3%D0%D6%D6%D2%AA%C9%CFT%CC%A8%B5%C4%B8%D0%BE%F5%A3%A1&diss_name=%C2%F4%B3%A1%D2%F4%C0%D6%A3%BA%C3%BF%B4%CE%BD%F8%B5%EA%B6%BC%D3%D0%D6%D6%D2%AA%C9%CFT%CC%A8%B5%C4%B8%D0%BE%F5%A3%A1';
+
+const decodeHtml = function decodeHtml (str) {
+  return str.replace(/&#(x)?([^&]{1,5});?/g, function ($, $1, $2) {
+    return String.fromCharCode(parseInt($2, $1 ? 16 : 10));
   })
 }
 
-export default class extends THINK.Controller {
+export default class extends think.controller.base {
   //构造方法
   init (http) {
     //调用父类构造方法
     super.init(http);
-    this.UserModel = THINK.model('Home/User', {});
   }
 
   //所有该控制器(含子类)方法前置方法
@@ -73,13 +41,12 @@ export default class extends THINK.Controller {
 
   //控制器默认方法
   indexAction () {
-    return this.display()
+    return this.ok('success');
   }
 
-  getipAction () {
-    return this.json({
-      ip: this.http.req.connection.remoteAddress.split(':')[3]
-    })
+  downloadAction () {
+    console.log(path.resolve(__dirname, './'))
+    return this.success('成功');
   }
 
   async fetchPageAction () {
@@ -192,24 +159,4 @@ export default class extends THINK.Controller {
     }
   }
 
-  // 登录
-  async loginAction () {
-    if (this.isPost()) {
-      let phonenum = this.post('phonenum')
-      let password = this.post('password')
-      let userInfo = await this.UserModel.where({phonenum, phonenum, password: THINK.md5(password)}).find();
-      userInfo.hasOwnProperty('password') && (delete userInfo.password)
-      if (THINK.isEmpty(userInfo)) {
-        return this.error('手机号或密码输入有误')
-      } else {
-        this.header('app-token', jwt.sign({
-          phonenum: phonenum,
-          nickname: userInfo.nickname
-        }, 'shhhhh'))
-        return this.success('登录成功', userInfo)
-      }
-    } else {
-      return this.error('请求姿势不正确~');
-    }
-  }
 }
