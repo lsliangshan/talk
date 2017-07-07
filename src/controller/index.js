@@ -94,7 +94,7 @@ export default class extends think.controller.base {
               name: (i + 1) + '. ' + temp[1],
               author: temp[3],
               url: tempUrl,
-              poster: 'http://talkapi.dei2.com/Static/img/default_cover.jpeg'
+              poster: 'http://static.dei2.com/imgs/default.jpg'
             }
             out.push(tempObj)
           }
