@@ -109,8 +109,7 @@ export default class extends think.controller.base {
       // } else {
       //   return this.jsonp(out)
       // }
-      this.header('Content-Type', 'text/javascript')
-      return this.json(_callback + "(" + JSON.stringify(out) + ")");
+      return this.echo(_callback + "(" + JSON.stringify(out) + ")", 'text/javascript');
     } else {
       return this.fail('请求姿势不正确')
     }
@@ -154,8 +153,7 @@ export default class extends think.controller.base {
         console.log('ERROR: ', err)
       });
       // return this.json(out)
-      this.header('Content-Type', 'text/javascript')
-      return this.json(_callback + '(' + JSON.stringify(out) + ')');
+      return this.echo(_callback + '(' + JSON.stringify(out) + ')', 'text/javascript');
     }
   }
 
