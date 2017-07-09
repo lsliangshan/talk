@@ -109,8 +109,8 @@ export default class extends think.controller.base {
       // } else {
       //   return this.jsonp(out)
       // }
-      this.header('Content-Type', 'text/javascript')
-      return this.json(_callback + "(" + JSON.stringify(out) + ")");
+      // this.header('Content-Type', 'text/javascript')
+      return this.echo(_callback + "(" + JSON.stringify(out) + ")", 'text/javascript');
     } else {
       return this.fail('请求姿势不正确')
     }
@@ -154,9 +154,17 @@ export default class extends think.controller.base {
         console.log('ERROR: ', err)
       });
       // return this.json(out)
-      this.header('Content-Type', 'text/javascript')
-      return this.json(_callback + '(' + JSON.stringify(out) + ')');
+      // this.header('Content-Type', 'text/javascript')
+      return this.echo(_callback + '(' + JSON.stringify(out) + ')', 'text/javascript');
     }
+  }
+
+  async getLettersAction () {
+    let _callback = this.get('callback');
+    let lettersModel = think.model('letters', {});
+    let out = await lettersModel.where({id: {'>=': 1}}).select();
+    console.log('....', out)
+    return this.echo(_callback + '(' + JSON.stringify(out) + ')', 'text/javascript');
   }
 
 }
