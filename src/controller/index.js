@@ -22,6 +22,8 @@ export default class extends think.controller.base {
   init (http) {
     //调用父类构造方法
     super.init(http);
+
+    this.lettersModel = think.model('letters', {});
   }
 
   //所有该控制器(含子类)方法前置方法
@@ -161,10 +163,21 @@ export default class extends think.controller.base {
 
   async getLettersAction () {
     let _callback = this.get('callback');
-    let lettersModel = think.model('letters', {});
-    let out = await lettersModel.where({id: {'>=': 1}}).select();
-    console.log('....', out)
-    return this.echo(_callback + '(' + JSON.stringify(out) + ')', 'text/javascript');
+    let out = await this.lettersModel.where({id: {'>=': 1}}).select();
+    return this.echo(_callback + '(' + JSON.stringify({'code': 200, 'errmsg': '获取成功', 'data': out}) + ')', 'text/javascript');
   }
 
+  async saveLetterAction () {
+    let _callback = this.get('callback');
+    let _param = {
+      'title': this.get('title') || '',
+      'content': this.get('content') || '',
+      'status': this.get('status') || 1,
+      'create_time': (+new Date) / 1000,
+      'image': this.get('image') || 'http://static.dei2.com/imgs/default.jpg',
+      'update_time': (+new Date) / 1000
+    }
+    await this.lettersModel.add(_param);
+    return this.echo(_callback + '(' + JSON.stringify({'code': 200, 'errmsg': '成功', 'data': _param}) + ')', 'text/javascript');
+  }
 }
