@@ -9,8 +9,6 @@ const cheerio = require('cheerio');
 const request = require('request');
 const rp = require('request-promise');
 
-let url = 'http://mp3.sogou.com/tiny/diss?diss_id=1138337852&query=%C2%F4%B3%A1%D2%F4%C0%D6%A3%BA%C3%BF%B4%CE%BD%F8%B5%EA%B6%BC%D3%D0%D6%D6%D2%AA%C9%CFT%CC%A8%B5%C4%B8%D0%BE%F5%A3%A1&diss_name=%C2%F4%B3%A1%D2%F4%C0%D6%A3%BA%C3%BF%B4%CE%BD%F8%B5%EA%B6%BC%D3%D0%D6%D6%D2%AA%C9%CFT%CC%A8%B5%C4%B8%D0%BE%F5%A3%A1';
-
 const decodeHtml = function decodeHtml (str) {
   return str.replace(/&#(x)?([^&]{1,5});?/g, function ($, $1, $2) {
     return String.fromCharCode(parseInt($2, $1 ? 16 : 10));
@@ -53,6 +51,7 @@ export default class extends think.controller.base {
 
   async fetchPageAction () {
     const that = this;
+    let url = this.get('from') || 'http://mp3.sogou.com';
     let _callback = this.get('callback');
     if (!!_callback) {
       let html = '';
