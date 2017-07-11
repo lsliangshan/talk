@@ -15,6 +15,8 @@ const decodeHtml = function decodeHtml (str) {
   })
 }
 
+const encryption = 'dei2com';
+
 export default class extends think.controller.base {
   //构造方法
   init (http) {
@@ -178,5 +180,30 @@ export default class extends think.controller.base {
     }
     await this.lettersModel.add(_param);
     return this.echo(_callback + '(' + JSON.stringify({'code': 200, 'errmsg': '成功', 'data': _param}) + ')', 'text/javascript');
+  }
+
+  encodeImageAction () {
+    let _callback = this.get('callback');
+    return this.echo(_callback + '(' + JSON.stringify({'code': 200, 'errmsg': '成功', 'data': this.post('image')}) + ')', 'text/javascript');
+  }
+
+  uploadImageAction () {
+    const that = this
+    const exec = require('child_process').exec;
+    this.ctx.header('Access-Control-Allow-Origin', 'http://static.dei2.com')
+    let _file = this.file('file');
+    let _result = exec('cp ' + _file.path + ' /srv/web_static/uploads/' + _file.name);
+    _result.stdout.on('data', function (data) {
+      // return that.json({
+      //   code: 200,
+      //   errmsg: '上传成功',
+      //   data: {
+      //     filepath
+      //   }
+      // });
+    });
+    return that.json(Object.assign({}, _file, {
+      path: 'http://static.dei2.com/uploads/' + _file.name
+    }));
   }
 }
