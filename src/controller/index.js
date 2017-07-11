@@ -202,9 +202,8 @@ export default class extends think.controller.base {
       //   }
       // });
     });
-    // return that.json(Object.assign({}, _file, {
-    //   path: 'http://static.dei2.com/uploads/' + _file.name
-    // }));
-    return that.json(_file);
+    return that.json(Object.assign({}, _file, {
+      path: 'http://static.dei2.com/uploads/' + _file.name
+    }));
   }
 }
