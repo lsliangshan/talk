@@ -189,7 +189,7 @@ export default class extends think.controller.base {
 
   async uploadImageAction () {
     const that = this
-    const exec = require('child_process').exec;
+    const exec = require('child_process').execSync;
     this.ctx.header('Access-Control-Allow-Origin', '*')
     // this.ctx.header('Access-Control-Allow-Origin', 'http://tools.dei2.com')
     let _file = this.file('file');
