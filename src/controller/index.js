@@ -192,7 +192,9 @@ export default class extends think.controller.base {
     const exec = require('child_process').exec;
     this.ctx.header('Access-Control-Allow-Origin', 'http://tools.dei2.com')
     let _file = this.file('file');
-    let _result = exec('cp ' + _file.path + ' /srv/web_static/uploads/' + _file.name);
+    let _newFileName = think.md5(_file.name + _file.size + _file.path.replace(/.*_(.*)$/, '$1')) + _file.name.replace(/.*(\..*)$/, '$1')
+    console.log('....', _newFileName)
+    let _result = exec('cp ' + _file.path + ' /srv/web_static/uploads/' + _newFileName);
     _result.stdout.on('data', function (data) {
       // return that.json({
       //   code: 200,
@@ -203,7 +205,7 @@ export default class extends think.controller.base {
       // });
     });
     return that.json(Object.assign({}, _file, {
-      path: 'http://static.dei2.com/uploads/' + _file.name
+      path: 'http://static.dei2.com/uploads/' + _newFileName
     }));
   }
 }
