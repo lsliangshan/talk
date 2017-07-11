@@ -187,17 +187,16 @@ export default class extends think.controller.base {
     return this.echo(_callback + '(' + JSON.stringify({'code': 200, 'errmsg': '成功', 'data': this.post('image')}) + ')', 'text/javascript');
   }
 
-  uploadImageAction () {
+  async uploadImageAction () {
     const that = this
     const exec = require('child_process').exec;
     this.ctx.header('Access-Control-Allow-Origin', '*')
     // this.ctx.header('Access-Control-Allow-Origin', 'http://tools.dei2.com')
     let _file = this.file('file');
     let _newFileName = think.md5(_file.name + _file.size + _file.path.replace(/.*_(.*)$/, '$1')) + _file.name.replace(/.*(\..*)$/, '$1')
-    let _result = exec('cp ' + _file.path + ' /srv/web_static/uploads/' + _newFileName);
-    _result.stdout.on('data', function (data) {
-      console.log('.......', data);
-    });
+    await exec('cp ' + _file.path + ' /srv/web_static/uploads/' + _newFileName);
+    // await exec('cp ' + _file.path + ' /Keith/uploads/' + _newFileName);
+
     return that.json(Object.assign({}, _file, {
       path: 'http://static.dei2.com/uploads/' + _newFileName
     }));
