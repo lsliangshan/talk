@@ -190,7 +190,8 @@ export default class extends think.controller.base {
   uploadImageAction () {
     const that = this
     const exec = require('child_process').exec;
-    this.ctx.header('Access-Control-Allow-Origin', 'http://tools.dei2.com')
+    this.ctx.header('Access-Control-Allow-Origin', '*')
+    // this.ctx.header('Access-Control-Allow-Origin', 'http://tools.dei2.com')
     let _file = this.file('file');
     let _newFileName = think.md5(_file.name + _file.size + _file.path.replace(/.*_(.*)$/, '$1')) + _file.name.replace(/.*(\..*)$/, '$1')
     console.log('....', _newFileName)
