@@ -194,16 +194,9 @@ export default class extends think.controller.base {
     // this.ctx.header('Access-Control-Allow-Origin', 'http://tools.dei2.com')
     let _file = this.file('file');
     let _newFileName = think.md5(_file.name + _file.size + _file.path.replace(/.*_(.*)$/, '$1')) + _file.name.replace(/.*(\..*)$/, '$1')
-    console.log('....', _newFileName)
     let _result = exec('cp ' + _file.path + ' /srv/web_static/uploads/' + _newFileName);
     _result.stdout.on('data', function (data) {
-      // return that.json({
-      //   code: 200,
-      //   errmsg: '上传成功',
-      //   data: {
-      //     filepath
-      //   }
-      // });
+      console.log('.......', data);
     });
     return that.json(Object.assign({}, _file, {
       path: 'http://static.dei2.com/uploads/' + _newFileName
