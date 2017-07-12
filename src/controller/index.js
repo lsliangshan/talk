@@ -24,6 +24,9 @@ export default class extends think.controller.base {
     super.init(http);
 
     this.lettersModel = think.model('letters', {});
+
+    this.ctx.header('Access-Control-Allow-Origin', 'http://127.0.0.1:4000');
+    this.ctx.header('Access-Control-Allow-Credentials', true);
   }
 
   //所有该控制器(含子类)方法前置方法
@@ -169,17 +172,16 @@ export default class extends think.controller.base {
   }
 
   async saveLetterAction () {
-    let _callback = this.get('callback');
     let _param = {
-      'title': this.get('title') || '',
-      'content': this.get('content') || '',
-      'status': this.get('status') || 1,
+      'title': this.post('title') || '',
+      'content': this.post('content') || '',
+      'status': this.post('status') || 1,
       'create_time': (+new Date) / 1000,
-      'image': this.get('image') || 'http://static.dei2.com/imgs/default.jpg',
+      'image': this.post('image') || 'http://static.dei2.com/imgs/default.jpg',
       'update_time': (+new Date) / 1000
     }
     await this.lettersModel.add(_param);
-    return this.echo(_callback + '(' + JSON.stringify({'code': 200, 'errmsg': '成功', 'data': _param}) + ')', 'text/javascript');
+    return this.json({'code': 200, 'errmsg': '成功', 'data': _param});
   }
 
   encodeImageAction () {
@@ -190,11 +192,10 @@ export default class extends think.controller.base {
   async uploadImageAction () {
     const that = this
     const exec = require('child_process').execSync;
-    this.ctx.header('Access-Control-Allow-Origin', '*')
     // this.ctx.header('Access-Control-Allow-Origin', 'http://tools.dei2.com')
-    let _file = this.file('file');
-    let _newFileName = think.md5(_file.name + _file.size + _file.path.replace(/.*_(.*)$/, '$1')) + _file.name.replace(/.*(\..*)$/, '$1')
     try {
+      let _file = this.file('file');
+      let _newFileName = think.md5(_file.name + _file.size + _file.path.replace(/.*_(.*)$/, '$1')) + _file.name.replace(/.*(\..*)$/, '$1')
       await exec('cp ' + _file.path + ' /srv/web_static/uploads/' + _newFileName);
       // await exec('cp ' + _file.path + ' /Keith/uploads/' + _newFileName);
       return that.json(Object.assign({}, _file, {
