@@ -29,7 +29,7 @@ export default class extends thinkorm {
           image: {
             type: 'string',
             index: true,
-            size: 50
+            size: 200
           },
           create_time: {
             type: 'integer'

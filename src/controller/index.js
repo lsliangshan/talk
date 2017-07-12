@@ -166,9 +166,8 @@ export default class extends think.controller.base {
   }
 
   async getLettersAction () {
-    let _callback = this.get('callback');
     let out = await this.lettersModel.where({id: {'>=': 1}}).select();
-    return this.echo(_callback + '(' + JSON.stringify({'code': 200, 'errmsg': '获取成功', 'data': out}) + ')', 'text/javascript');
+    return this.json({'code': 200, 'errmsg': '获取成功', 'data': out});
   }
 
   async saveLetterAction () {
