@@ -25,7 +25,7 @@ export default class extends think.controller.base {
 
     this.lettersModel = think.model('letters', {});
 
-    this.ctx.header('Access-Control-Allow-Origin', 'http://127.0.0.1:4000');
+    this.ctx.header('Access-Control-Allow-Origin', 'http://tools.dei2.com');
     this.ctx.header('Access-Control-Allow-Credentials', true);
   }
 
