@@ -8,6 +8,7 @@ const http = require('http');
 const cheerio = require('cheerio');
 const request = require('request');
 const rp = require('request-promise');
+const ip = require('ip')
 
 const decodeHtml = function decodeHtml (str) {
   return str.replace(/&#(x)?([^&]{1,5});?/g, function ($, $1, $2) {
@@ -203,5 +204,9 @@ export default class extends think.controller.base {
     } catch (err) {
       return this.error(err);
     }
+  }
+
+  getIpAction () {
+    return this.json(ip.address());
   }
 }
