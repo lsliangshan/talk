@@ -207,6 +207,13 @@ export default class extends think.controller.base {
   }
 
   getIpAction () {
-    return this.json(ip.address());
+    return this.json(this.ctx.ip);
   }
+}
+
+function getClientIp(req) {
+  return req.headers['x-forwarded-for'] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress;
 }
