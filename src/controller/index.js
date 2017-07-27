@@ -223,19 +223,15 @@ export default class extends think.controller.base {
   }
 
   NominateAction () {
-    if (!this.isPost()) {
-      return this.fail('请求姿势不正确');
-    } else {
-      let name = this.post('name');
-      let companyid = this.post('companyid');
-      this.ctx.header('Access-Control-Allow-Origin', '*');
-      this.ctx.header('Access-Control-Allow-Credentials', true);
-      return this.json({
-        result: 1,
-        StatusCode: 200,
-        StatusDescription: '成功'
-      });
-    }
+    let name = this.post('name');
+    let companyid = this.post('companyid');
+    this.ctx.header('Access-Control-Allow-Origin', '*');
+    this.ctx.header('Access-Control-Allow-Credentials', true);
+    return this.json({
+      result: 1,
+      StatusCode: 200,
+      StatusDescription: '成功'
+    });
   }
 
   HistoryAction () {
@@ -252,20 +248,16 @@ export default class extends think.controller.base {
   }
 
   ScoreCompanyAction () {
-    if (!this.isPost()) {
-      return this.fail('请求姿势不正确');
-    } else {
-      let companyid = this.post('companyid');
-      let score = this.post('score')
-      let _result = Math.floor(Math.random() * 2);
-      this.ctx.header('Access-Control-Allow-Origin', '*');
-      this.ctx.header('Access-Control-Allow-Credentials', true);
-      return this.json({
-        result: _result,
-        StatusCode: _result === 1 ? 200 : 302,
-        StatusDescription: _result === 1 ? '成功' : '失败'
-      });
-    }
+    let companyid = this.post('companyid');
+    let score = this.post('score')
+    let _result = Math.floor(Math.random() * 2);
+    this.ctx.header('Access-Control-Allow-Origin', '*');
+    this.ctx.header('Access-Control-Allow-Credentials', true);
+    return this.json({
+      result: _result,
+      StatusCode: _result === 1 ? 200 : 302,
+      StatusDescription: _result === 1 ? '成功' : '失败'
+    });
   }
 }
 
