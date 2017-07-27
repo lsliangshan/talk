@@ -251,11 +251,12 @@ export default class extends think.controller.base {
     });
   }
 
-  VoteAction () {
+  ScoreCompanyAction () {
     if (!this.isPost()) {
       return this.fail('请求姿势不正确');
     } else {
       let companyid = this.post('companyid');
+      let score = this.post('score')
       let _result = Math.floor(Math.random() * 2);
       this.ctx.header('Access-Control-Allow-Origin', '*');
       this.ctx.header('Access-Control-Allow-Credentials', true);
