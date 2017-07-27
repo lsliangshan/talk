@@ -207,13 +207,83 @@ export default class extends think.controller.base {
   }
 
   getIpAction () {
+    console.log(getClientIP(this.ctx.req))
     return this.json(this.ctx.ip);
+  }
+
+  IsCompanyApplyAction () {
+    let companyid = this.get('companyid');
+    return this.json({
+      result: Math.floor(Math.random() * 2),
+      StatusCode: 200,
+      StatusDescription: '成功'
+    });
+  }
+
+  NominateAction () {
+    if (!this.isPost()) {
+      return this.fail('请求姿势不正确');
+    } else {
+      let name = this.post('name');
+      let companyid = this.post('companyid')
+      return this.json({
+        result: 1,
+        StatusCode: 200,
+        StatusDescription: '成功'
+      });
+    }
+  }
+
+  HistoryAction () {
+    let companyid = this.get('companyid');
+    let awards = ['中国年度最佳雇主百强', '城市最佳雇主', '最具发展潜力雇主'];
+    return this.json({
+      result: 1,
+      StatusCode: 200,
+      StatusDescription: '成功',
+      data: getAwards(awards)
+    });
+  }
+
+  VoteAction () {
+    if (!this.isPost()) {
+      return this.fail('请求姿势不正确');
+    } else {
+      let companyid = this.post('companyid');
+      let _result = Math.floor(Math.random() * 2);
+      return this.json({
+        result: _result,
+        StatusCode: _result === 1 ? 200 : 302,
+        StatusDescription: _result === 1 ? '成功' : '失败'
+      });
+    }
   }
 }
 
-function getClientIp(req) {
-  return req.headers['x-forwarded-for'] ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress ||
-    req.connection.socket.remoteAddress;
+function getRandomAward (awards) {
+  return awards[Math.floor(Math.random() * awards.length)];
+}
+
+function getAwards (awards) {
+  let _awardCount = Math.floor(Math.random() * 30);
+  let out = [];
+  for (let i = 0; i < _awardCount; i++) {
+    out.push({
+      awardId: Math.floor(Math.random() * 1000),
+      awardName: getRandomAward(awards),
+      awardYear: Math.floor(Math.random() * 18 + 2000)
+    });
+  }
+  return out;
+}
+
+function getClientIP (req){
+  var ipAddress;
+  var headers = req.headers;
+  var forwardedIpsStr = headers['x-real-ip'] || headers['<a href="https://www.baidu.com/s?wd=x-forwarded-for&tn=44039180_cpr&fenlei=mv6quAkxTZn0IZRqIHckPjm4nH00T1Y3PHFBuARYnWm4rAmknhmL0ZwV5Hcvrjm3rH6sPfKWUMw85HfYnjn4nH6sgvPsT6KdThsqpZwYTjCEQLGCpyw9Uz4Bmy-bIi4WUvYETgN-TLwGUv3EnHnvPHfsPHRLPjmdnHnYP1md" target="_blank" class="baidu-highlight">x-forwarded-for</a>'];
+  forwardedIpsStr ? ipAddress = forwardedIpsStr : ipAddress = null;
+  if (!ipAddress) {
+    ipAddress = req.connection.remoteAddress;
+  }
+  return ipAddress;
 }
