@@ -213,6 +213,8 @@ export default class extends think.controller.base {
 
   IsCompanyApplyAction () {
     let companyid = this.get('companyid');
+    this.ctx.header('Access-Control-Allow-Origin', '*');
+    this.ctx.header('Access-Control-Allow-Credentials', true);
     return this.json({
       result: Math.floor(Math.random() * 2),
       StatusCode: 200,
@@ -225,7 +227,9 @@ export default class extends think.controller.base {
       return this.fail('请求姿势不正确');
     } else {
       let name = this.post('name');
-      let companyid = this.post('companyid')
+      let companyid = this.post('companyid');
+      this.ctx.header('Access-Control-Allow-Origin', '*');
+      this.ctx.header('Access-Control-Allow-Credentials', true);
       return this.json({
         result: 1,
         StatusCode: 200,
@@ -237,6 +241,8 @@ export default class extends think.controller.base {
   HistoryAction () {
     let companyid = this.get('companyid');
     let awards = ['中国年度最佳雇主百强', '城市最佳雇主', '最具发展潜力雇主'];
+    this.ctx.header('Access-Control-Allow-Origin', '*');
+    this.ctx.header('Access-Control-Allow-Credentials', true);
     return this.json({
       result: 1,
       StatusCode: 200,
@@ -251,6 +257,8 @@ export default class extends think.controller.base {
     } else {
       let companyid = this.post('companyid');
       let _result = Math.floor(Math.random() * 2);
+      this.ctx.header('Access-Control-Allow-Origin', '*');
+      this.ctx.header('Access-Control-Allow-Credentials', true);
       return this.json({
         result: _result,
         StatusCode: _result === 1 ? 200 : 302,
