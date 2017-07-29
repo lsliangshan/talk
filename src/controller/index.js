@@ -17,6 +17,7 @@ const decodeHtml = function decodeHtml (str) {
 }
 
 const encryption = 'dei2com';
+const jwt = require('jsonwebtoken');
 
 export default class extends think.controller.base {
   //构造方法
@@ -25,9 +26,11 @@ export default class extends think.controller.base {
     super.init(http);
 
     this.lettersModel = think.model('letters', {});
+    this.userModel = think.model('user', {});
 
-    this.ctx.header('Access-Control-Allow-Origin', 'http://tools.dei2.com');
+    this.ctx.header('Access-Control-Allow-Origin', '*');
     this.ctx.header('Access-Control-Allow-Credentials', true);
+    this.ctx.header('Access-Control-Allow-Headers', 'Content-Type,Accept');
   }
 
   //所有该控制器(含子类)方法前置方法
@@ -207,88 +210,49 @@ export default class extends think.controller.base {
   }
 
   getIpAction () {
-    console.log(getClientIP(this.ctx.req))
     return this.json(this.ctx.ip);
   }
 
-  IsCompanyApplyAction () {
-    let companyid = this.get('companyid');
-    this.ctx.header('Access-Control-Allow-Origin', '*');
-    this.ctx.header('Access-Control-Allow-Credentials', true);
-    this.ctx.header('Access-Control-Allow-Headers', 'Content-Type,Accept');
-    return this.json({
-      result: Math.floor(Math.random() * 2),
-      StatusCode: 200,
-      StatusDescription: '成功'
-    });
+  async loginAction () {
+    let _username = this.get('username');
+    let _password = this.get('password');
+    let userInfo = await this.userModel.where({'phonenum': _username, 'password': _password}).find()
+    if (think.isEmpty(userInfo)) {
+      return this.json({'code': 200, 'errmsg': '登录失败', data: {}});
+    } else {
+      let loginToken = jwt.sign({
+        data: {
+          username: _username
+        }
+      }, 'secret', { expiresIn: 10 });
+      this.session(_username, loginToken)
+      this.userModel.where({id: userInfo.id}).update({'last_login_time': (+new Date())})
+      if (userInfo.hasOwnProperty('password')) {
+        delete userInfo.password;
+      }
+      return this.json({'code': 200, 'errmsg': '登录成功', data: Object.assign({}, userInfo, {
+        token: loginToken
+      })});
+    }
   }
 
-  NominateAction () {
-    let name = this.post('name');
-    let companyid = this.post('companyid');
-    this.ctx.header('Access-Control-Allow-Origin', '*');
-    this.ctx.header('Access-Control-Allow-Credentials', true);
-    this.ctx.header('Access-Control-Allow-Headers', 'Content-Type,Accept');
-    return this.json({
-      result: 1,
-      StatusCode: 200,
-      StatusDescription: '成功'
-    });
+  async checkLoginAction () {
+    let _username = this.get('username');
+    let _token = this.get('token');
+    let _userSession = await this.session(_username);
+    if (_userSession === _token) {
+      return this.json({'code': 200, 'errmsg': '已经登录', 'data': {}});
+    } else {
+      return this.json({'code': 200, 'errmsg': '未登录', 'data': {}});
+    }
   }
 
-  HistoryAction () {
-    let companyid = this.get('companyid');
-    let awards = ['中国年度最佳雇主百强', '城市最佳雇主', '最具发展潜力雇主'];
-    this.ctx.header('Access-Control-Allow-Origin', '*');
-    this.ctx.header('Access-Control-Allow-Credentials', true);
-    this.ctx.header('Access-Control-Allow-Headers', 'Content-Type,Accept');
-    return this.json({
-      result: 1,
-      StatusCode: 200,
-      StatusDescription: '成功',
-      data: getAwards(awards)
-    });
+  signAction () {
+    let code = this.get('code')
+    return this.json({'code': 200, 'errmsg': '成功', data: {
+      signCode: jwt.sign({
+        data: code
+      }, 'secret', { expiresIn: 24 * 60 * 60 })
+    }});
   }
-
-  ScoreCompanyAction () {
-    let companyid = this.post('companyid');
-    let score = this.post('score')
-    let _result = Math.floor(Math.random() * 2);
-    this.ctx.header('Access-Control-Allow-Origin', '*');
-    this.ctx.header('Access-Control-Allow-Credentials', true);
-    this.ctx.header('Access-Control-Allow-Headers', 'Content-Type,Accept');
-    return this.json({
-      result: _result,
-      StatusCode: _result === 1 ? 200 : 302,
-      StatusDescription: _result === 1 ? '成功' : '失败'
-    });
-  }
-}
-
-function getRandomAward (awards) {
-  return awards[Math.floor(Math.random() * awards.length)];
-}
-
-function getAwards (awards) {
-  let _awardCount = Math.floor(Math.random() * 30);
-  let out = [];
-  for (let i = 0; i < _awardCount; i++) {
-    out.push({
-      awardId: Math.floor(Math.random() * 1000),
-      awardName: getRandomAward(awards),
-      awardYear: Math.floor(Math.random() * 18 + 2000)
-    });
-  }
-  return out;
-}
-
-function getClientIP (req){
-  var ipAddress;
-  var headers = req.headers;
-  var forwardedIpsStr = headers['x-real-ip'] || headers['<a href="https://www.baidu.com/s?wd=x-forwarded-for&tn=44039180_cpr&fenlei=mv6quAkxTZn0IZRqIHckPjm4nH00T1Y3PHFBuARYnWm4rAmknhmL0ZwV5Hcvrjm3rH6sPfKWUMw85HfYnjn4nH6sgvPsT6KdThsqpZwYTjCEQLGCpyw9Uz4Bmy-bIi4WUvYETgN-TLwGUv3EnHnvPHfsPHRLPjmdnHnYP1md" target="_blank" class="baidu-highlight">x-forwarded-for</a>'];
-  forwardedIpsStr ? ipAddress = forwardedIpsStr : ipAddress = null;
-  if (!ipAddress) {
-    ipAddress = req.connection.remoteAddress;
-  }
-  return ipAddress;
 }

@@ -28,6 +28,9 @@
   "dependencies": {
     "babel-runtime": "6.23.0",
     "ip": "^1.1.5",
+    "jsonwebtoken": "^7.4.1",
+    "think_session": "^1.1.1",
+    "think_store": "^1.0.1",
     "thinkkoa": "^1.x.x"
   },
   "devDependencies": {
