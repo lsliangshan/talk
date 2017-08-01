@@ -241,9 +241,9 @@ export default class extends think.controller.base {
     let _token = this.get('token');
     let _userSession = await this.session(_username);
     if (_userSession === _token) {
-      return this.json({'code': 200, 'errmsg': '已经登录', 'data': {}});
+      return this.json({'code': 200, 'errmsg': '已经登录', 'data': {isLogin: true}});
     } else {
-      return this.json({'code': 200, 'errmsg': '未登录', 'data': {}});
+      return this.json({'code': 200, 'errmsg': '未登录', 'data': {isLogin: false}});
     }
   }
 
