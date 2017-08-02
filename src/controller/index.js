@@ -237,6 +237,16 @@ export default class extends think.controller.base {
     }
   }
 
+  async logoutAction () {
+    let _username = this.get('username');
+    let _token = this.get('token');
+    let _userSession = await this.session(_username);
+    if (_userSession === _token) {
+      await this.session(_username, null);
+    }
+    return this.json({'code': 200, 'errmsg': '退出成功'});
+  }
+
   async checkLoginAction () {
     let _username = this.get('username');
     let _token = this.get('token');
