@@ -218,7 +218,8 @@ export default class extends think.controller.base {
     let _password = this.get('password');
     let userInfo = await this.userModel.where({'phonenum': _username, 'password': _password}).find()
     if (think.isEmpty(userInfo)) {
-      return this.json({'code': 200, 'errmsg': '登录失败', data: {}});
+      return this.error('登录失败');
+      // return this.json({'code': 1001, 'errmsg': '登录失败', data: {}});
     } else {
       let loginToken = jwt.sign({
         data: {
