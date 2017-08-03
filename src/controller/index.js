@@ -58,6 +58,47 @@ export default class extends think.controller.base {
     return this.success('成功');
   }
 
+  async fetchBuDeJieAction () {
+    const page = this.get('page');
+    let url = 'http://www.budejie.com/text/' + page;
+    let html = '';
+    function autoParse(body, response, resolveWithFullResponse) {
+      // FIXME: The content type string could contain additional values like the charset.
+      // Consider using the `content-type` library for a robust comparison.
+      if (response.headers['content-type'] === 'application/json') {
+        return JSON.parse(body);
+      } else if (response.headers['content-type'] === 'text/html') {
+        return cheerio.load(body);
+      } else {
+        return cheerio.load(body);
+      }
+    }
+    let options = {
+      uri: url,
+      transform: autoParse
+    }
+    let out = []
+    let tempItem
+    await rp(options).then(function ($) {
+      html = $('.j-r-list').eq(0).html();
+      for (let i = 0; i < $('.j-list-user').length; i++) {
+        tempItem = $('.j-list-user').eq(i);
+        out.push({
+          username: decodeHtml(tempItem.find('.u-user-name').eq(0).html()),
+          icon: tempItem.find('.u-logo').eq(0).data('original'),
+          content: decodeHtml($('.j-r-list-c-desc').eq(i).find('a').eq(0).html()),
+          time: tempItem.find('.u-time').html()
+        });
+      }
+    }).catch(function (err) {
+      console.log('ERROR: ', err);
+    });
+    return this.json({'code': 200, 'errmsg': '获取成功', data: {
+      list: out
+    }});
+    // return this.echo(decodeHtml(html))
+  }
+
   async fetchPageAction () {
     const that = this;
     let url = this.get('from') || 'http://mp3.sogou.com';
