@@ -100,7 +100,7 @@ export default class extends think.controller.base {
   }
 
   async fetchTouTiaoAction () {
-    const time = this.get('min_behot_time') || 0;
+    const time = this.get('lt') || 0;
     let url = 'http://www.toutiao.com/api/pc/feed/?min_behot_time=' + time + '&category=__all__&utm_source=toutiao&widen=1&tadrequire=true&as=A1559938738E1C8&cp=5983AE41BC988E1';
     let html = '';
     function autoParse(body, response, resolveWithFullResponse) {
@@ -125,7 +125,7 @@ export default class extends think.controller.base {
     }).catch(function (err) {
       console.log('ERROR: ', err);
     });
-    return this.echo(html);
+    return this.json({'code': 200, 'errmsg': '获取成功', data: html});
   }
 
   async fetchPageAction () {
