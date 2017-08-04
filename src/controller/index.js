@@ -99,6 +99,35 @@ export default class extends think.controller.base {
     // return this.echo(decodeHtml(html))
   }
 
+  async fetchTouTiaoAction () {
+    const time = this.get('min_behot_time') || 0;
+    let url = 'http://www.toutiao.com/api/pc/feed/?min_behot_time=' + time + '&category=__all__&utm_source=toutiao&widen=1&tadrequire=true&as=A1559938738E1C8&cp=5983AE41BC988E1';
+    let html = '';
+    function autoParse(body, response, resolveWithFullResponse) {
+      // FIXME: The content type string could contain additional values like the charset.
+      // Consider using the `content-type` library for a robust comparison.
+      if (response.headers['content-type'] === 'application/json') {
+        return JSON.parse(body);
+      } else if (response.headers['content-type'] === 'text/html') {
+        return cheerio.load(body);
+      } else {
+        return body;
+      }
+    }
+    let options = {
+      uri: url,
+      transform: autoParse
+    }
+    let out = []
+    let tempItem
+    await rp(options).then(function (res) {
+      html = res
+    }).catch(function (err) {
+      console.log('ERROR: ', err);
+    });
+    return this.echo(html);
+  }
+
   async fetchPageAction () {
     const that = this;
     let url = this.get('from') || 'http://mp3.sogou.com';
