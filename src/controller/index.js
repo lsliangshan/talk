@@ -100,8 +100,25 @@ export default class extends think.controller.base {
   }
 
   async fetchTouTiaoAction () {
-    const time = this.get('lt') || 0;
-    let url = 'http://www.toutiao.com/api/pc/feed/?min_behot_time=' + time + '&category=__all__&utm_source=toutiao&widen=1&tadrequire=true&as=A1559938738E1C8&cp=5983AE41BC988E1';
+    // const time = this.get('min_behot_time') || 0;
+    // const as = this.get('as') || '';
+    // const category = this.get('category') || '__all__';
+    // const utm_source = this.get('utm_source') || 'toutiao';
+    // const widen = this.get('widen') || 1;
+    // const tadrequire = this.get('tadrequire') || 'true';
+    // const cp = this.get('cp') || '5983AE41BC988E1';
+
+    let params = [];
+    this.get('min_behot_time') ? params.push('min_behot_time=' + this.get('min_behot_time')) : params.push('min_behot_time=0');
+    this.get('as') && params.push('as=' + this.get('as'));
+    this.get('category') ? params.push('category=' + this.get('category')) : params.push('category=__all__');
+    this.get('utm_source') && params.push('utm_source=' + this.get('utm_source'));
+    this.get('widen') && params.push('widen=' + this.get('widen'));
+    this.get('tadrequire') && params.push('tadrequire=' + this.get('tadrequire'));
+    this.get('cp') && params.push('cp=' + this.get('cp'));
+
+    // let url = 'http://www.toutiao.com/api/pc/feed/?min_behot_time=' + time + '&category=__all__&utm_source=toutiao&widen=1&tadrequire=true&as='+as+'&cp=5983AE41BC988E1';
+    let url = 'http://www.toutiao.com/api/pc/feed/?' + params.join('&');
     let html = '';
     function autoParse(body, response, resolveWithFullResponse) {
       // FIXME: The content type string could contain additional values like the charset.
