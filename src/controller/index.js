@@ -107,19 +107,18 @@ export default class extends think.controller.base {
     // const widen = this.get('widen') || 1;
     // const tadrequire = this.get('tadrequire') || 'true';
     // const cp = this.get('cp') || '5983AE41BC988E1';
-    // &=0
+
     let params = [];
-    this.get('tag') ? params.push('tag=' + this.get('tag')) : params.push('tag=__all__');
-    this.get('ac') ? params.push('ac=' + this.get('ac')) : params.push('ac=wap');
-    this.get('count') ? params.push('count=' + this.get('count')) : params.push('count=20');
-    this.get('format') ? params.push('format=' + this.get('format')) : params.push('format=json_raw');
-    this.get('as') ? params.push('as=' + this.get('as')) : params.push('as=A14549B8B7ED1E5');
-    this.get('cp') ? params.push('cp=' + this.get('cp')) : params.push('cp=5987BD218E15BE1');
-    this.get('min_behot_time') && params.push('min_behot_time=' + this.get('min_behot_time'));
-    this.get('max_behot_time') && params.push('max_behot_time=' + this.get('max_behot_time'));
+    this.get('min_behot_time') ? params.push('min_behot_time=' + this.get('min_behot_time')) : params.push('min_behot_time=0');
+    this.get('as') && params.push('as=' + this.get('as'));
+    this.get('category') ? params.push('category=' + this.get('category')) : params.push('category=__all__');
+    this.get('utm_source') && params.push('utm_source=' + this.get('utm_source'));
+    this.get('widen') && params.push('widen=' + this.get('widen'));
+    this.get('tadrequire') && params.push('tadrequire=' + this.get('tadrequire'));
+    this.get('cp') && params.push('cp=' + this.get('cp'));
 
     // let url = 'http://www.toutiao.com/api/pc/feed/?min_behot_time=' + time + '&category=__all__&utm_source=toutiao&widen=1&tadrequire=true&as='+as+'&cp=5983AE41BC988E1';
-    let url = 'https://m.toutiao.com/list/?' + params.join('&');
+    let url = 'http://www.toutiao.com/api/pc/feed/?' + params.join('&');
     let html = '';
     function autoParse(body, response, resolveWithFullResponse) {
       // FIXME: The content type string could contain additional values like the charset.
