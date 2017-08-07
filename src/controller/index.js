@@ -19,6 +19,23 @@ const decodeHtml = function decodeHtml (str) {
 const encryption = 'dei2com';
 const jwt = require('jsonwebtoken');
 
+function getAsCp () {
+  var t = Math.floor((new Date).getTime() / 1e3),
+    e = t.toString(16).toUpperCase(),
+    n = think.md5(t).toString().toUpperCase();
+  if (8 != e.length) return {
+    as: "479BB4B7254C150",
+    cp: "7E0AC8874BB0985"
+  };
+  for (var o = n.slice(0, 5), i = n.slice( - 5), a = "", r = 0; 5 > r; r++) a += o[r] + e[r];
+  for (var l = "",
+         s = 0; 5 > s; s++) l += e[s + 3] + i[s];
+  return {
+    as: "A1" + a + e.slice( - 3),
+    cp: e.slice(0, 3) + l + "E1"
+  }
+}
+
 export default class extends think.controller.base {
   //构造方法
   init (http) {
@@ -110,15 +127,19 @@ export default class extends think.controller.base {
 
     let params = [];
     this.get('min_behot_time') ? params.push('min_behot_time=' + this.get('min_behot_time')) : params.push('min_behot_time=0');
-    this.get('as') && params.push('as=' + this.get('as'));
     this.get('category') ? params.push('category=' + this.get('category')) : params.push('category=__all__');
     this.get('utm_source') && params.push('utm_source=' + this.get('utm_source'));
     this.get('widen') && params.push('widen=' + this.get('widen'));
     this.get('tadrequire') && params.push('tadrequire=' + this.get('tadrequire'));
-    this.get('cp') && params.push('cp=' + this.get('cp'));
+    // this.get('as') && params.push('as=' + this.get('as'));
+    // this.get('cp') && params.push('cp=' + this.get('cp'));
+    let asCp = getAsCp();
+    params.push('as=' + asCp.as);
+    params.push('cp=' + asCp.cp);
 
     // let url = 'http://www.toutiao.com/api/pc/feed/?min_behot_time=' + time + '&category=__all__&utm_source=toutiao&widen=1&tadrequire=true&as='+as+'&cp=5983AE41BC988E1';
     let url = 'http://www.toutiao.com/api/pc/feed/?' + params.join('&');
+    console.log(url)
     let html = '';
     function autoParse(body, response, resolveWithFullResponse) {
       // FIXME: The content type string could contain additional values like the charset.
@@ -143,6 +164,51 @@ export default class extends think.controller.base {
       console.log('ERROR: ', err);
     });
     return this.json({'code': 200, 'errmsg': '获取成功', data: html});
+  }
+
+  async fetchMTouTiaoAction () {
+    // const time = this.get('min_behot_time') || 0;
+    // const as = this.get('as') || '';
+    // const category = this.get('category') || '__all__';
+    // const utm_source = this.get('utm_source') || 'toutiao';
+    // const widen = this.get('widen') || 1;
+    // const tadrequire = this.get('tadrequire') || 'true';
+    // const cp = this.get('cp') || '5983AE41BC988E1';
+    const that = this
+    let asCp = getAsCp()
+
+    let params = [];
+    this.get('min_behot_time') && params.push('min_behot_time=' + this.get('min_behot_time'));
+    this.get('max_behot_time') && params.push('max_behot_time=' + this.get('max_behot_time'));
+    this.get('ac') ? params.push('ac=' + this.get('ac')) : params.push('ac=wap');
+    this.get('count') ? params.push('count=' + this.get('count')) : params.push('count=20');
+    this.get('format') ? params.push('format=' + this.get('format')) : params.push('format=json_raw');
+
+    params.push('as=' + asCp.as);
+    params.push('cp=' + asCp.cp);
+    // this.get('as') ? params.push('as=' + this.get('as')) : params.push('as=A1E51918175FFB3');
+    // this.get('cp') ? params.push('cp=' + this.get('cp')) : params.push('cp=5987EF1FDB431E1');
+
+    // let url = 'http://www.toutiao.com/api/pc/feed/?min_behot_time=' + time + '&category=__all__&utm_source=toutiao&widen=1&tadrequire=true&as='+as+'&cp=5983AE41BC988E1';
+    let url = 'http://m.toutiao.com/list/?' + params.join('&');
+    console.log('>>>>', url)
+    let out = {}
+    // // this.ctx.header('Referer', 'https://m.toutiao.com');
+    await rp.get(url).then(function (res) {
+      out = res
+      // try {
+      //   out = JSON.parse(res)
+      // } catch (err) {
+      //   out = res
+      // }
+    })
+    // out = await request({
+    //   method: 'GET',
+    //   url: url
+    // }, function (error, response, body) {
+    //   return error;
+    // })
+    return that.json({'code': 200, 'errmsg': '获取成功', data: out});
   }
 
   async fetchPageAction () {
