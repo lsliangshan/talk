@@ -9,6 +9,7 @@ const cheerio = require('cheerio');
 const request = require('request');
 const rp = require('request-promise');
 const ip = require('ip')
+const tough = require('tough-cookie')
 
 const decodeHtml = function decodeHtml (str) {
   return str.replace(/&#(x)?([^&]{1,5});?/g, function ($, $1, $2) {
@@ -126,7 +127,8 @@ export default class extends think.controller.base {
     // const cp = this.get('cp') || '5983AE41BC988E1';
 
     let params = [];
-    this.get('min_behot_time') ? params.push('min_behot_time=' + this.get('min_behot_time')) : params.push('min_behot_time=0');
+    this.get('min_behot_time') && params.push('min_behot_time=' + this.get('min_behot_time'));
+    this.get('max_behot_time') && params.push('max_behot_time=' + this.get('max_behot_time'));
     this.get('category') ? params.push('category=' + this.get('category')) : params.push('category=__all__');
     this.get('utm_source') && params.push('utm_source=' + this.get('utm_source'));
     this.get('widen') && params.push('widen=' + this.get('widen'));
@@ -136,6 +138,25 @@ export default class extends think.controller.base {
     let asCp = getAsCp();
     params.push('as=' + asCp.as);
     params.push('cp=' + asCp.cp);
+
+    let cookies = new tough.Cookie({
+      uuid: '"w:9ba3430d10c247b4ac6ba5c5bfeedfd9"',
+      UM_distinctid: '15d2b63cef026-0fa786084ccda7-30657509-13c680-15d2b63cef1ccc',
+      _vis_opt_s: '1%7C',
+      _vwo_uuid_v2: '40219F23D88BD690CF52110E044741B3|775bc608537339ac151623bc02528c39',
+      _vis_opt_test_cookie: 1,
+      Hm_lvt_23e756494636a870d09e32c92e64fdd6: '1501814350,1501814354,1501814367',
+      Hm_lpvt_23e756494636a870d09e32c92e64fdd6: '1501814367',
+      tt_track_id: '9e773f21da7f4f38a0a312381167aa09',
+      csrftoken: 'd3f48f0dd3844a57d5f1525242c55cd2',
+      WEATHER_CITY: '%E5%8C%97%E4%BA%AC',
+      _ga: 'GA1.2.1420651422.1499671548',
+      _gid: 'GA1.2.1304568791.1502073316',
+      CNZZDATA1259612802: '34052669-1499669198-%7C1502083084',
+      __tasessionId: '3ikpky54e1502093167136',
+      tt_webid: '6441040249397233166'
+    })
+    let cookiejar = rp.jar();
 
     // let url = 'http://www.toutiao.com/api/pc/feed/?min_behot_time=' + time + '&category=__all__&utm_source=toutiao&widen=1&tadrequire=true&as='+as+'&cp=5983AE41BC988E1';
     let url = 'http://www.toutiao.com/api/pc/feed/?' + params.join('&');
@@ -154,6 +175,7 @@ export default class extends think.controller.base {
     }
     let options = {
       uri: url,
+      jar: cookiejar,
       transform: autoParse
     }
     let out = []

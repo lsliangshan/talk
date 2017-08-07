@@ -31,7 +31,8 @@
     "jsonwebtoken": "^7.4.1",
     "think_session": "^1.1.1",
     "think_store": "^1.0.1",
-    "thinkkoa": "^1.x.x"
+    "thinkkoa": "^1.x.x",
+    "tough-cookie": "^2.3.2"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
