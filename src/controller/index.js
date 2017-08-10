@@ -441,4 +441,32 @@ export default class extends think.controller.base {
       }, 'secret', { expiresIn: 24 * 60 * 60 })
     }});
   }
+
+  async getCityInfoByLatLngAction () {
+    let lat = this.get('lat');
+    let lng = this.get('lng');
+    function autoParse(body, response, resolveWithFullResponse) {
+      // FIXME: The content type string could contain additional values like the charset.
+      // Consider using the `content-type` library for a robust comparison.
+      if (response.headers['content-type'] === 'application/json') {
+        return JSON.parse(body);
+      } else if (response.headers['content-type'] === 'text/html') {
+        return cheerio.load(body);
+      } else {
+        return body;
+      }
+    }
+    let url = 'https://m.zhaopin.com/Home/GetCityInfoByLatLng?lat=' + lat + '&lng=' + lng;
+    let options = {
+      uri: url,
+      transform: autoParse
+    }
+    let out = {}
+    await rp(options).then(function (res) {
+      out = res
+    }).catch(function (err) {
+      console.log('ERROR: ', err);
+    });
+    return this.json({code: 200, errmsg: '成功', data: out})
+  }
 }
