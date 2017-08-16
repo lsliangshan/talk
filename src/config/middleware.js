@@ -51,6 +51,7 @@ module.exports = {
       //memcache_port: 11211,
       //memcache_poolsize: 10, //memcache pool size
       //memcache_timeout: 10, //try connection timeout,
-    }
+    },
+    static: false
   }
 };
