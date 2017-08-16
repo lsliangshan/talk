@@ -52,6 +52,15 @@ module.exports = {
       //memcache_poolsize: 10, //memcache pool size
       //memcache_timeout: 10, //try connection timeout,
     },
-    static: false
+    static: {//静态资源,如果配置了Nginx代理,请设置为 static: false
+      dir: '/static', //resource path
+      prefix: '/', //resource prefix
+      gzip: true, //enable gzip
+      maxAge: 3600 * 24, //cache maxAge seconds
+      buffer: false, //enable buffer
+      alias: {},  //alias files {key: path}
+      preload: false, //preload files
+      cache: false //files cache
+    }
   }
 };
